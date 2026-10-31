@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\JogoController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', fn () => redirect()->route('jogos.index'));
+
+Route::resource('jogos', JogoController::class);
