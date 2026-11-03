@@ -1,58 +1,163 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Nexus Games Studio
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web de gerenciamento e consulta de jogos, desenvolvido com Laravel e PostgreSQL. O projeto permite cadastrar, consultar, editar, excluir e pesquisar jogos, além de disponibilizar uma API REST para acesso aos dados.
 
-## About Laravel
+## Tecnologias utilizadas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP** – linguagem de programação.
+- **Laravel** – framework para desenvolvimento web.
+- **PostgreSQL (Neon)** – banco de dados relacional em nuvem.
+- **Blade** – mecanismo de templates do Laravel.
+- **HTML, CSS e JavaScript** – estrutura, estilização e interatividade.
+- **SQLite** – banco de dados isolado para testes automatizados.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Cadastro de jogos.
+- Consulta e visualização de detalhes.
+- Edição e exclusão de jogos.
+- Pesquisa de jogos pelo título.
+- Filtro por categoria.
+- Paginação do catálogo.
+- Relacionamento entre jogos, categorias e desenvolvedores.
+- Interface com tema claro e escuro.
+- API REST para consulta e gerenciamento de jogos.
 
-## Learning Laravel
+## Estrutura do banco de dados
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+O projeto possui sete entidades principais:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Tabela | Descrição |
+|---|---|
+| jogos | Armazena os jogos cadastrados. |
+| categorias | Armazena as categorias dos jogos. |
+| desenvolvedores | Armazena os estúdios desenvolvedores. |
+| usuarios | Armazena os usuários da plataforma. |
+| compras | Registra as compras realizadas. |
+| itens_compra | Armazena os itens de cada compra. |
+| avaliacoes | Armazena as avaliações dos jogos. |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+O projeto utiliza relacionamentos entre as entidades por meio do Eloquent ORM.
 
-## Agentic Development
+## Arquitetura do projeto
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+O sistema utiliza a organização MVC do Laravel, com uma camada adicional de serviços:
+
+- **Models:** representam as entidades e seus relacionamentos.
+- **Views:** apresentam as páginas da aplicação utilizando Blade.
+- **Controllers:** recebem as requisições e controlam o fluxo da aplicação.
+- **Services:** concentram as operações de gerenciamento dos jogos.
+- **API Resources:** padronizam os dados retornados pela API.
+
+## Requisitos
+
+- PHP compatível com a versão do Laravel utilizada.
+- Composer.
+- Node.js e NPM.
+- PostgreSQL ou banco PostgreSQL Neon.
+- Extensões PHP necessárias, incluindo PDO PostgreSQL e PDO SQLite para executar os testes.
+
+## Instalação
+
+Clone o repositório:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/LuizZuko/Prova4p.git
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Entre na pasta do projeto:
 
-## Contributing
+```bash
+cd Prova4p
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Instale as dependências:
 
-## Code of Conduct
+```bash
+composer install
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Crie o arquivo de configuração:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Gere a chave da aplicação:
 
-## License
+```bash
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Configure no arquivo `.env` os dados de conexão com o PostgreSQL Neon.
+
+Execute a aplicação:
+
+```bash
+php artisan serve
+```
+
+Em outro terminal, compile os arquivos de frontend:
+
+```bash
+npm run dev
+```
+
+A aplicação estará disponível no endereço:
+
+`http://127.0.0.1:8000`
+
+**Observação:** as tabelas principais do banco são administradas no PostgreSQL do projeto. Configure o banco conforme a estrutura SQL fornecida antes de executar a aplicação. Não execute migrations de produção sem verificar previamente o ambiente e o conteúdo delas.
+
+## API REST
+
+A API disponibiliza operações para gerenciamento dos jogos.
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | /api/jogos | Lista os jogos. |
+| POST | /api/jogos | Cadastra um jogo. |
+| GET | /api/jogos/{id} | Consulta um jogo específico. |
+| PUT/PATCH | /api/jogos/{id} | Atualiza um jogo. |
+| DELETE | /api/jogos/{id} | Exclui um jogo. |
+
+As respostas da API são disponibilizadas em formato JSON.
+
+## Banco de dados e recursos SQL
+
+O projeto utiliza recursos do PostgreSQL, incluindo:
+
+- Índices para otimização de consultas.
+- Funções SQL.
+- Stored Procedures.
+- Triggers para automatização de operações.
+
+Os scripts SQL estão localizados na pasta `database/sql`.
+
+## Testes automatizados
+
+Os testes são executados utilizando PHPUnit por meio do comando:
+
+```bash
+php artisan test
+```
+
+O ambiente de testes utiliza SQLite em memória, mantendo os testes isolados do banco PostgreSQL de produção.
+
+Testes implementados:
+
+1. Verificação do redirecionamento da página inicial para o catálogo.
+2. Verificação do carregamento do catálogo.
+3. Verificação da listagem de jogos pela API em JSON.
+4. Verificação dos detalhes de um jogo pela API.
+
+**Resultado atual:** 5 testes aprovados, incluindo o teste unitário padrão do Laravel, com 11 verificações (assertions).
+
+## Backup
+
+O backup do banco de dados está armazenado em:
+
+`database/backups/nexus.backup`
+
+A restauração deve ser realizada em um banco PostgreSQL compatível, utilizando o procedimento adequado ao formato do arquivo e conferindo o schema de destino antes da execução.
