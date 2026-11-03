@@ -101,11 +101,18 @@ php artisan key:generate
 
 ### 6. Configurar o banco de dados
 
-Configure no arquivo `.env` os dados de conexão com o PostgreSQL Neon.
+Configure no arquivo `.env` os dados de conexão com o PostgreSQL Neon, incluindo host, porta, nome do banco, usuário, senha e schema utilizado pelo projeto.
 
-Verifique também se o schema utilizado pelo projeto está configurado corretamente na conexão PostgreSQL.
+Após configurar a conexão, execute as migrations para preparar as tabelas e os objetos SQL:
 
-As tabelas principais do banco são administradas no PostgreSQL do projeto. Configure o banco conforme a estrutura SQL fornecida antes de executar a aplicação. Não execute migrations de produção sem verificar previamente o ambiente e o conteúdo delas.
+```bash
+php artisan migrate
+```
+
+As migrations verificam a estrutura existente e registram sua execução. Caso o banco já possua as tabelas do projeto, elas não serão recriadas.
+
+**Importante:** não utilize `migrate:fresh` em um banco com dados que deseja preservar.
+
 
 ### 7. Criar o link de armazenamento das imagens
 

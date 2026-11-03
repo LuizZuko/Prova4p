@@ -51,6 +51,8 @@ BEGIN
     VALUES (p_usuario_id, p_metodo_pagamento, p_valor_total);
 END;
 $$;-- Função auxiliar da trigger 1
+
+
 CREATE OR REPLACE FUNCTION trg_recalcular_media_jogo()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -58,7 +60,13 @@ AS $$
 DECLARE
     v_jogo_id INT;
 BEGIN
-    v_jogo_id := COALESCE(NEW.jogo_id, OLD.jogo_id);
+    IF TG_OP = 'DELETE' THEN
+        v_jogo_id := OLD.jogo_id;
+    ELSE
+        v_jogo_id := NEW.jogo_id;
+    END IF;
+
+    -- Recalcula a média do jogo atual
     UPDATE jogos
     SET avaliacao_media = (
         SELECT COALESCE(ROUND(AVG(nota)::numeric, 2), 0.00)
@@ -66,7 +74,12 @@ BEGIN
         WHERE jogo_id = v_jogo_id
     )
     WHERE id_jogo = v_jogo_id;
-    IF TG_OP = 'UPDATE' AND OLD.jogo_id <> NEW.jogo_id THEN
+
+    -- Se a avaliação foi transferida para outro jogo,
+    -- também recalcula a média do jogo anterior.
+    IF TG_OP = 'UPDATE'
+       AND OLD.jogo_id IS DISTINCT FROM NEW.jogo_id THEN
+
         UPDATE jogos
         SET avaliacao_media = (
             SELECT COALESCE(ROUND(AVG(nota)::numeric, 2), 0.00)
@@ -74,10 +87,13 @@ BEGIN
             WHERE jogo_id = OLD.jogo_id
         )
         WHERE id_jogo = OLD.jogo_id;
+
     END IF;
+
     RETURN NULL;
 END;
-$$;-- TRIGGER 1: recalcula média após inserir/editar/excluir avaliação
+$$;
+
 DROP TRIGGER IF EXISTS tg_recalcular_media_avaliacao ON avaliacoes;
 CREATE TRIGGER tg_recalcular_media_avaliacao
 AFTER INSERT OR UPDATE OR DELETE ON avaliacoes
