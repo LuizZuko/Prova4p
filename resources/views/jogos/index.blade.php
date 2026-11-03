@@ -115,11 +115,18 @@
 
         <article class="game-card">
 
-            <div class="game-art">
-                <span class="game-art-label">
-                    NEXUS / GAME CATALOG
-                </span>
-            </div>
+           <div class="game-art">
+    @if ($jogo->capa)
+        <img
+            src="{{ asset('storage/' . $jogo->capa) }}"
+            alt="Capa do jogo {{ $jogo->titulo }}"
+        >
+    @else
+        <span class="game-art-label">
+            NEXUS / GAME CATALOG
+        </span>
+    @endif
+</div>
 
             <div class="game-card-body">
 

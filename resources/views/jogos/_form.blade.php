@@ -3,9 +3,11 @@
     $editando = isset($jogo);
 @endphp
 
-<form action="{{ $editando ? route('catalogo.update', $jogo) : route('catalogo.store') }}"
-      method="POST">
-
+<form
+    action="{{ $editando ? route('catalogo.update', $jogo) : route('catalogo.store') }}"
+    method="POST"
+    enctype="multipart/form-data"
+>
     @csrf
 
     @if ($editando)
@@ -15,9 +17,7 @@
     <div class="form-grid">
 
         <div class="field field-full">
-
             <label for="titulo">Nome do jogo</label>
-
             <input
                 id="titulo"
                 name="titulo"
@@ -26,21 +26,15 @@
                 value="{{ old('titulo', $jogo->titulo ?? '') }}"
                 placeholder="Ex.: Cyberpunk 2077"
             >
-
             @error('titulo')
                 <span class="field-error">{{ $message }}</span>
             @enderror
-
         </div>
 
         <div class="field">
-
             <label for="categoria_id">Categoria</label>
-
             <select id="categoria_id" name="categoria_id" required>
-
                 <option value="">Selecione</option>
-
                 @foreach ($categorias as $categoria)
                     <option
                         value="{{ $categoria->id_categoria }}"
@@ -49,23 +43,16 @@
                         {{ $categoria->nome_categoria }}
                     </option>
                 @endforeach
-
             </select>
-
             @error('categoria_id')
                 <span class="field-error">{{ $message }}</span>
             @enderror
-
         </div>
 
         <div class="field">
-
             <label for="desenvolvedor_id">Desenvolvedor</label>
-
             <select id="desenvolvedor_id" name="desenvolvedor_id" required>
-
                 <option value="">Selecione</option>
-
                 @foreach ($desenvolvedores as $desenvolvedor)
                     <option
                         value="{{ $desenvolvedor->id_desenvolvedor }}"
@@ -74,19 +61,14 @@
                         {{ $desenvolvedor->nome_estudio }}
                     </option>
                 @endforeach
-
             </select>
-
             @error('desenvolvedor_id')
                 <span class="field-error">{{ $message }}</span>
             @enderror
-
         </div>
 
         <div class="field">
-
             <label for="preco">Preço (R$)</label>
-
             <input
                 id="preco"
                 name="preco"
@@ -97,17 +79,13 @@
                 value="{{ old('preco', $jogo->preco ?? '') }}"
                 placeholder="149.90"
             >
-
             @error('preco')
                 <span class="field-error">{{ $message }}</span>
             @enderror
-
         </div>
 
         <div class="field">
-
             <label for="data_lancamento">Data de lançamento</label>
-
             <input
                 id="data_lancamento"
                 name="data_lancamento"
@@ -115,26 +93,43 @@
                 required
                 value="{{ old('data_lancamento', isset($jogo) ? $jogo->data_lancamento?->format('Y-m-d') : '') }}"
             >
-
             @error('data_lancamento')
                 <span class="field-error">{{ $message }}</span>
             @enderror
+        </div>
 
+        <div class="field field-full">
+            <label for="capa">Capa do jogo</label>
+            <input
+                id="capa"
+                name="capa"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+            >
+
+            @if ($editando && $jogo->capa)
+                <p>Imagem atual:</p>
+                <img
+                    src="{{ asset('storage/' . $jogo->capa) }}"
+                    alt="Capa de {{ $jogo->titulo }}"
+                    style="width: 140px; border-radius: 8px;"
+                >
+            @endif
+
+            @error('capa')
+                <span class="field-error">{{ $message }}</span>
+            @enderror
         </div>
 
     </div>
 
     <div class="form-actions">
-
-        <a class="button button-secondary"
-           href="{{ route('catalogo.index') }}">
+        <a class="button button-secondary" href="{{ route('catalogo.index') }}">
             Cancelar
         </a>
 
         <button class="button button-primary" type="submit">
             {{ $editando ? 'Salvar alterações' : 'Cadastrar jogo' }}
         </button>
-
     </div>
-
 </form>

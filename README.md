@@ -16,6 +16,7 @@ Sistema web de gerenciamento e consulta de jogos, desenvolvido com Laravel e Pos
 - Cadastro de jogos.
 - Consulta e visualização de detalhes.
 - Edição e exclusão de jogos.
+- Upload e exibição de capas dos jogos.
 - Pesquisa de jogos pelo título.
 - Filtro por categoria.
 - Paginação do catálogo.
@@ -59,40 +60,60 @@ O sistema utiliza a organização MVC do Laravel, com uma camada adicional de se
 
 ## Instalação
 
-Clone o repositório:
+### 1. Clonar o repositório
 
 ```bash
 git clone https://github.com/LuizZuko/Prova4p.git
 ```
 
-Entre na pasta do projeto:
+### 2. Entrar na pasta do projeto
 
 ```bash
 cd Prova4p
 ```
 
-Instale as dependências:
+### 3. Instalar as dependências
 
 ```bash
 composer install
 npm install
 ```
 
-Crie o arquivo de configuração:
+### 4. Criar o arquivo de configuração
+
+No Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+No Linux/macOS:
 
 ```bash
 cp .env.example .env
 ```
 
-Gere a chave da aplicação:
+### 5. Gerar a chave da aplicação
 
 ```bash
 php artisan key:generate
 ```
 
+### 6. Configurar o banco de dados
+
 Configure no arquivo `.env` os dados de conexão com o PostgreSQL Neon.
 
-Execute a aplicação:
+Verifique também se o schema utilizado pelo projeto está configurado corretamente na conexão PostgreSQL.
+
+As tabelas principais do banco são administradas no PostgreSQL do projeto. Configure o banco conforme a estrutura SQL fornecida antes de executar a aplicação. Não execute migrations de produção sem verificar previamente o ambiente e o conteúdo delas.
+
+### 7. Criar o link de armazenamento das imagens
+
+```bash
+php artisan storage:link
+```
+
+### 8. Executar a aplicação
 
 ```bash
 php artisan serve
@@ -104,11 +125,9 @@ Em outro terminal, compile os arquivos de frontend:
 npm run dev
 ```
 
-A aplicação estará disponível no endereço:
+A aplicação estará disponível em:
 
-`http://127.0.0.1:8000`
-
-**Observação:** as tabelas principais do banco são administradas no PostgreSQL do projeto. Configure o banco conforme a estrutura SQL fornecida antes de executar a aplicação. Não execute migrations de produção sem verificar previamente o ambiente e o conteúdo delas.
+http://127.0.0.1:8000
 
 ## API REST
 
@@ -116,11 +135,13 @@ A API disponibiliza operações para gerenciamento dos jogos.
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| GET | /api/jogos | Lista os jogos. |
-| POST | /api/jogos | Cadastra um jogo. |
-| GET | /api/jogos/{id} | Consulta um jogo específico. |
-| PUT/PATCH | /api/jogos/{id} | Atualiza um jogo. |
-| DELETE | /api/jogos/{id} | Exclui um jogo. |
+| GET | `/api/jogos` | Lista os jogos. |
+| POST | `/api/jogos` | Cadastra um jogo. |
+| GET | `/api/jogos/{id}` | Consulta um jogo específico. |
+| PUT/PATCH | `/api/jogos/{id}` | Atualiza um jogo. |
+| DELETE | `/api/jogos/{id}` | Exclui um jogo. |
+| POST | `/api/usuarios/{usuario}/carteira/creditos` | Adiciona créditos à carteira. |
+| GET | `/api/usuarios/{usuario}/total-gasto` | Consulta o total gasto pelo usuário. |
 
 As respostas da API são disponibilizadas em formato JSON.
 
@@ -133,7 +154,11 @@ O projeto utiliza recursos do PostgreSQL, incluindo:
 - Stored Procedures.
 - Triggers para automatização de operações.
 
-Os scripts SQL estão localizados na pasta `database/sql`.
+Os scripts SQL estão localizados na pasta `database/sql`:
+
+- `indices.sql`
+- `objetos.sql`
+- `Verificação.sql`
 
 ## Testes automatizados
 
@@ -154,10 +179,23 @@ Testes implementados:
 
 **Resultado atual:** 5 testes aprovados, incluindo o teste unitário padrão do Laravel, com 11 verificações (assertions).
 
-## Backup
+## Backup e restauração
 
 O backup do banco de dados está armazenado em:
 
 `database/backups/nexus.backup`
 
-A restauração deve ser realizada em um banco PostgreSQL compatível, utilizando o procedimento adequado ao formato do arquivo e conferindo o schema de destino antes da execução.
+Para conferir o conteúdo do backup, utilize:
+
+```bash
+pg_restore --list database/backups/nexus.backup
+```
+
+A restauração deve ser realizada em um banco PostgreSQL compatível. Exemplo de comando:
+
+```bash
+pg_restore --clean --if-exists --no-owner --no-privileges -d "SUA_STRING_DE_CONEXAO" database/backups/nexus.backup
+```
+
+**Atenção:** faça a restauração em um banco de destino apropriado. A opção `--clean` pode remover objetos existentes antes de restaurá-los. Confira o schema de destino e faça um backup antes de substituir dados.
+

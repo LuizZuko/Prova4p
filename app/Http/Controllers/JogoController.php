@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rule;
 use App\Models\Categoria;
 use App\Models\Desenvolvedor;
 use App\Models\Jogo;
@@ -9,6 +10,7 @@ use App\Services\JogoService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class JogoController extends Controller
 {
@@ -49,7 +51,6 @@ class JogoController extends Controller
     public function create(): View
     {
         $categorias = Categoria::orderBy('nome_categoria')->get();
-
         $desenvolvedores = Desenvolvedor::orderBy('nome_estudio')->get();
 
         return view('jogos.create', compact(
@@ -62,31 +63,36 @@ class JogoController extends Controller
     {
         $dados = $request->validate([
             'titulo' => ['required', 'string', 'max:120'],
+           'desenvolvedor_id' => [
+    'required',
+    'integer',
+    Rule::exists('pgsql.luiz_trabalho_bd.desenvolvedores', 'id_desenvolvedor')
+],
 
-            'desenvolvedor_id' => [
-                'required',
-                'integer',
-                'exists:luiz_trabalho_bd.desenvolvedores,id_desenvolvedor'
-            ],
-
-            'categoria_id' => [
-                'required',
-                'integer',
-                'exists:luiz_trabalho_bd.categorias,id_categoria'
-            ],
-
+'categoria_id' => [
+    'required',
+    'integer',
+    Rule::exists('pgsql.luiz_trabalho_bd.categorias', 'id_categoria')
+],
             'preco' => [
                 'required',
                 'numeric',
                 'min:0',
                 'max:99999999.99'
             ],
-
-            'data_lancamento' => [
-                'required',
-                'date'
+            'data_lancamento' => ['required', 'date'],
+            'capa' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:5120'
             ],
         ]);
+
+        if ($request->hasFile('capa')) {
+            $dados['capa'] = $request->file('capa')
+                ->store('capas', 'public');
+        }
 
         $dados['avaliacao_media'] = 0;
 
@@ -107,7 +113,6 @@ class JogoController extends Controller
     public function edit(Jogo $jogo): View
     {
         $categorias = Categoria::orderBy('nome_categoria')->get();
-
         $desenvolvedores = Desenvolvedor::orderBy('nome_estudio')->get();
 
         return view('jogos.edit', compact(
@@ -121,31 +126,40 @@ class JogoController extends Controller
     {
         $dados = $request->validate([
             'titulo' => ['required', 'string', 'max:120'],
+           'desenvolvedor_id' => [
+    'required',
+    'integer',
+    Rule::exists('pgsql.luiz_trabalho_bd.desenvolvedores', 'id_desenvolvedor')
+],
 
-            'desenvolvedor_id' => [
-                'required',
-                'integer',
-                'exists:luiz_trabalho_bd.desenvolvedores,id_desenvolvedor'
-            ],
-
-            'categoria_id' => [
-                'required',
-                'integer',
-                'exists:luiz_trabalho_bd.categorias,id_categoria'
-            ],
-
+'categoria_id' => [
+    'required',
+    'integer',
+    Rule::exists('pgsql.luiz_trabalho_bd.categorias', 'id_categoria')
+],
             'preco' => [
                 'required',
                 'numeric',
                 'min:0',
                 'max:99999999.99'
             ],
-
-            'data_lancamento' => [
-                'required',
-                'date'
+            'data_lancamento' => ['required', 'date'],
+            'capa' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,webp',
+                'max:5120'
             ],
         ]);
+
+        if ($request->hasFile('capa')) {
+            if ($jogo->capa) {
+                Storage::disk('public')->delete($jogo->capa);
+            }
+
+            $dados['capa'] = $request->file('capa')
+                ->store('capas', 'public');
+        }
 
         $this->service->atualizar($jogo, $dados);
 
@@ -156,6 +170,10 @@ class JogoController extends Controller
 
     public function destroy(Jogo $jogo): RedirectResponse
     {
+        if ($jogo->capa) {
+            Storage::disk('public')->delete($jogo->capa);
+        }
+
         $this->service->excluir($jogo);
 
         return redirect()

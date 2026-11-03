@@ -29,6 +29,15 @@
 
     <div class="details-content">
 
+        @if ($jogo->capa)
+            <div class="details-cover">
+                <img
+                    src="{{ asset('storage/' . $jogo->capa) }}"
+                    alt="Capa do jogo {{ $jogo->titulo }}"
+                >
+            </div>
+        @endif
+
         <div class="details-grid">
 
             <div class="detail-item">

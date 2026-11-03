@@ -59,20 +59,31 @@ class JogoController extends Controller
         ], 200);
     }
 
-    private function validar(Request $request): array
-    {
-        return $request->validate([
-            'titulo' => ['required', 'string', 'max:120'],
-            'desenvolvedor_id' => [
-                'required', 'integer',
-                'exists:luiz_trabalho_bd.desenvolvedores,id_desenvolvedor'
-            ],
-            'categoria_id' => [
-                'required', 'integer',
-                'exists:luiz_trabalho_bd.categorias,id_categoria'
-            ],
-            'preco' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
-            'data_lancamento' => ['required', 'date'],
-        ]);
-    }
+   private function validar(Request $request): array
+{
+    return $request->validate([
+        'titulo' => ['required', 'string', 'max:120'],
+
+        'desenvolvedor_id' => [
+            'required',
+            'integer',
+            'exists:pgsql.luiz_trabalho_bd.desenvolvedores,id_desenvolvedor'
+        ],
+
+        'categoria_id' => [
+            'required',
+            'integer',
+            'exists:pgsql.luiz_trabalho_bd.categorias,id_categoria'
+        ],
+
+        'preco' => [
+            'required',
+            'numeric',
+            'min:0',
+            'max:99999999.99'
+        ],
+
+        'data_lancamento' => ['required', 'date'],
+    ]);
+}
 }
